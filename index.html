@@ -25,6 +25,54 @@
             --smooth-ease: cubic-bezier(0.4, 0.0, 0.2, 1);
         }
 
+        /* --- DARK MODE VARIABLES --- */
+        body.dark-mode {
+            --primary-lila: #d48edc;
+            --deep-purple: #e0b0ff; /* Texto claro en fondo oscuro */
+            --app-bg: radial-gradient(at 50% 10%, rgba(60, 20, 70, 0.8) 0%, rgba(20, 10, 30, 0) 80%), 
+                      linear-gradient(180deg, #1a0b2e 0%, #2d1b4e 100%);
+            --glass-bg: rgba(30, 10, 40, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --soft-shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            --soft-shadow-md: 0 10px 20px -5px rgba(0, 0, 0, 0.4);
+            color: #f0f0f0;
+        }
+        
+        body.dark-mode .title {
+            background: linear-gradient(45deg, #e0b0ff, #ff80ab);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        body.dark-mode .click-instruction {
+            color: #e0b0ff;
+        }
+
+        /* Botón de tema */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--soft-shadow-md);
+            transition: transform 0.3s ease, background 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
         /* --- RESET Y CENTRADO ABSOLUTO --- */
         html, body {
             margin: 0;
@@ -748,8 +796,1081 @@
             }
         }
     </style>
+    <style>
+        /* Loader Wrapper */
+        #page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--app-bg); /* Matches app background */
+            z-index: 99999;
+            transition: opacity 0.6s ease-out, visibility 0.6s;
+        }
+        
+        /* From Uiverse.io by SouravBandyopadhyay */ 
+        .cssload-main {
+            position: absolute;
+            content: '';
+            left: 50%;
+            top: 50%; /* Centering fix */
+            transform: translate(-100%, -240%);
+            -o-transform: translate(-100%, -240%);
+            -ms-transform: translate(-100%, -240%);
+            -webkit-transform: translate(-100%, -240%);
+            -moz-transform: translate(-100%, -240%);
+        }
+
+        .cssload-main * {
+            font-size: 62px;
+        }
+
+        .cssload-heart {
+            animation: cssload-heart 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite normal;
+            -o-animation: cssload-heart 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite normal;
+            -ms-animation: cssload-heart 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite normal;
+            -webkit-animation: cssload-heart 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite normal;
+            -moz-animation: cssload-heart 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite normal;
+            top: 50%;
+            content: '';
+            left: 50%;
+            position: absolute;
+        }
+
+        .cssload-heartL {
+            width: 1em;
+            height: 1em;
+            border: 1px solid #000;
+            background-color: #000;
+            content: '';
+            position: absolute;
+            display: block;
+            border-radius: 100%;
+            animation: cssload-heartL 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite normal;
+            -o-animation: cssload-heartL 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite normal;
+            -ms-animation: cssload-heartL 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite normal;
+            -webkit-animation: cssload-heartL 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite normal;
+            -moz-animation: cssload-heartL 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite normal;
+            transform: translate(-28px, -27px);
+            -o-transform: translate(-28px, -27px);
+            -ms-transform: translate(-28px, -27px);
+            -webkit-transform: translate(-28px, -27px);
+            -moz-transform: translate(-28px, -27px);
+        }
+
+        .cssload-heartR {
+            width: 1em;
+            height: 1em;
+            border: 1px solid #000;
+            background-color: #000;
+            content: '';
+            position: absolute;
+            display: block;
+            border-radius: 100%;
+            transform: translate(28px, -27px);
+            -o-transform: translate(28px, -27px);
+            -ms-transform: translate(28px, -27px);
+            -webkit-transform: translate(28px, -27px);
+            -moz-transform: translate(28px, -27px);
+            animation: cssload-heartR 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite normal;
+            -o-animation: cssload-heartR 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite normal;
+            -ms-animation: cssload-heartR 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite normal;
+            -webkit-animation: cssload-heartR 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite normal;
+            -moz-animation: cssload-heartR 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite normal;
+        }
+
+        .cssload-square {
+            width: 1em;
+            height: 1em;
+            border: 1px solid #000;
+            background-color: #000;
+            position: relative;
+            display: block;
+            content: '';
+            transform: scale(1) rotate(-45deg);
+            -o-transform: scale(1) rotate(-45deg);
+            -ms-transform: scale(1) rotate(-45deg);
+            -webkit-transform: scale(1) rotate(-45deg);
+            -moz-transform: scale(1) rotate(-45deg);
+            animation: cssload-square 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite normal;
+            -o-animation: cssload-square 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite normal;
+            -ms-animation: cssload-square 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite normal;
+            -webkit-animation: cssload-square 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite normal;
+            -moz-animation: cssload-square 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite normal;
+        }
+
+        .cssload-shadow {
+            top: 97px;
+            left: 50%;
+            content: '';
+            position: relative;
+            display: block;
+            bottom: -.5em;
+            width: 1em;
+            height: .24em;
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 50%;
+            animation: cssload-shadow 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite normal;
+            -o-animation: cssload-shadow 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite normal;
+            -ms-animation: cssload-shadow 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite normal;
+            -webkit-animation: cssload-shadow 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite normal;
+            -moz-animation: cssload-shadow 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite normal;
+        }
+
+        @keyframes cssload-square {
+            50% {
+                border-radius: 100%;
+                transform: scale(0.5) rotate(-45deg);
+            }
+            100% {
+                transform: scale(1) rotate(-45deg);
+            }
+        }
+
+        @-o-keyframes cssload-square {
+            50% {
+                border-radius: 100%;
+                -o-transform: scale(0.5) rotate(-45deg);
+            }
+            100% {
+                -o-transform: scale(1) rotate(-45deg);
+            }
+        }
+
+        @-ms-keyframes cssload-square {
+            50% {
+                border-radius: 100%;
+                -ms-transform: scale(0.5) rotate(-45deg);
+            }
+            100% {
+                -ms-transform: scale(1) rotate(-45deg);
+            }
+        }
+
+        @-webkit-keyframes cssload-square {
+            50% {
+                border-radius: 100%;
+                -webkit-transform: scale(0.5) rotate(-45deg);
+            }
+            100% {
+                -webkit-transform: scale(1) rotate(-45deg);
+            }
+        }
+
+        @-moz-keyframes cssload-square {
+            50% {
+                border-radius: 100%;
+                -moz-transform: scale(0.5) rotate(-45deg);
+            }
+            100% {
+                -moz-transform: scale(1) rotate(-45deg);
+            }
+        }
+
+        @keyframes cssload-heart {
+            50% {
+                transform: rotate(360deg);
+            }
+            100% {
+                transform: rotate(720deg);
+            }
+        }
+
+        @-o-keyframes cssload-heart {
+            50% {
+                -o-transform: rotate(360deg);
+            }
+            100% {
+                -o-transform: rotate(720deg);
+            }
+        }
+
+        @-ms-keyframes cssload-heart {
+            50% {
+                -ms-transform: rotate(360deg);
+            }
+            100% {
+                -ms-transform: rotate(720deg);
+            }
+        }
+
+        @-webkit-keyframes cssload-heart {
+            50% {
+                -webkit-transform: rotate(360deg);
+            }
+            100% {
+                -webkit-transform: rotate(720deg);
+            }
+        }
+
+        @-moz-keyframes cssload-heart {
+            50% {
+                -moz-transform: rotate(360deg);
+            }
+            100% {
+                -moz-transform: rotate(720deg);
+            }
+        }
+
+        @keyframes cssload-heartL {
+            60% {
+                transform: scale(0.4);
+            }
+        }
+
+        @-o-keyframes cssload-heartL {
+            60% {
+                -o-transform: scale(0.4);
+            }
+        }
+
+        @-ms-keyframes cssload-heartL {
+            60% {
+                -ms-transform: scale(0.4);
+            }
+        }
+
+        @-webkit-keyframes cssload-heartL {
+            60% {
+                -webkit-transform: scale(0.4);
+            }
+        }
+
+        @-moz-keyframes cssload-heartL {
+            60% {
+                -moz-transform: scale(0.4);
+            }
+        }
+
+        @keyframes cssload-heartR {
+            40% {
+                transform: scale(0.4);
+            }
+        }
+
+        @-o-keyframes cssload-heartR {
+            40% {
+                -o-transform: scale(0.4);
+            }
+        }
+
+        @-ms-keyframes cssload-heartR {
+            40% {
+                -ms-transform: scale(0.4);
+            }
+        }
+
+        @-webkit-keyframes cssload-heartR {
+            40% {
+                -webkit-transform: scale(0.4);
+            }
+        }
+
+        @-moz-keyframes cssload-heartR {
+            40% {
+                -moz-transform: scale(0.4);
+            }
+        }
+
+        @keyframes cssload-shadow {
+            50% {
+                transform: scale(0.5);
+                border-color: rgba(0, 0, 0, 0.2);
+            }
+        }
+
+        @-o-keyframes cssload-shadow {
+            50% {
+                -o-transform: scale(0.5);
+                border-color: rgba(0, 0, 0, 0.2);
+            }
+        }
+
+        @-ms-keyframes cssload-shadow {
+            50% {
+                -ms-transform: scale(0.5);
+                border-color: rgba(0, 0, 0, 0.2);
+            }
+        }
+
+        @-webkit-keyframes cssload-shadow {
+            50% {
+                -webkit-transform: scale(0.5);
+                border-color: rgba(0, 0, 0, 0.2);
+            }
+        }
+
+        @-moz-keyframes cssload-shadow {
+            50% {
+                -moz-transform: scale(0.5);
+                border-color: rgba(0, 0, 0, 0.2);
+            }
+        }
+
+        /* --- TICKET STYLES --- */
+        /* From Uiverse.io by marcelodolza */ 
+        .output {
+          align-self: center;
+          background: inherit;
+          border-radius: 100px;
+          padding: 0 12px 0 10px;
+          height: 36px;
+          min-width: 350px;
+          position: relative;
+          top: -140px;
+        }
+
+        .output .cover {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            bottom: 2px;
+            left: 2px;
+            border-radius: 100px;
+            clip-path: inset(0 0 0 0 round 100px);
+            background: #101216;
+            transition: filter 1000ms cubic-bezier(0, 0, 0, 1);
+            filter: blur(5px);
+        }
+        .output .cover::after {
+            content: "";
+            top: -10px;
+            right: -10px;
+            bottom: -10px;
+            left: -10px;
+            border-radius: 100px;
+            position: absolute;
+            background: inherit;
+            opacity: 0.5;
+        }
+
+        .output .wrap-colors-1,
+        .output .wrap-colors-2 {
+            overflow: hidden;
+            border-radius: 100px;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            pointer-events: none;
+        }
+        .output .wrap-colors-1 {
+            opacity: 0.35;
+            filter: blur(3px);
+        }
+        .output .bg-colors {
+            background: transparent;
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            margin: auto;
+            inset: 0;
+            left: 50%;
+            transform: translateX(-50%) rotate(220deg);
+            border-radius: 50%;
+        }
+        
+        .output::before {
+            content: "";
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            border-radius: inherit;
+            position: absolute;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: #ffffff14;
+            opacity: 0.4;
+            transition:
+                opacity 400ms linear,
+                background-color 400ms linear;
+        }
+        .output::after {
+            content: "";
+            position: absolute;
+            left: 12px;
+            right: 12px;
+            top: 14px;
+            background: linear-gradient(0deg, transparent, black);
+            height: 9px;
+            mix-blend-mode: soft-light;
+            border-radius: 100px;
+        }
+
+        @keyframes cycle-opacity {
+            0% {
+                opacity: 0;
+            }
+            30% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+        @keyframes cycle-rotate {
+            from {
+                transform: translateX(-50%) rotate(0deg);
+            }
+            to {
+                transform: translateX(-50%) rotate(360deg);
+            }
+        }
+
+        .area {
+            --ease-elastic: cubic-bezier(0.5, 2, 0.3, 0.8);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            inset: 0;
+        }
+
+        .area .area-wrapper:hover .wrapper {
+            transform: translateY(0) scale(1);
+            box-shadow: 0 20px 50px -5px black;
+        }
+
+        .area::after {
+            pointer-events: none;
+            content: "";
+            position: absolute;
+            top: 66%;
+            left: 0;
+            right: 0;
+            height: 100px;
+            width: 30%;
+            margin: auto;
+            background-color: #648cc630;
+            filter: blur(2em);
+            opacity: 0.7;
+            transform: perspective(10px) rotateX(5deg) scale(1, 0.5);
+            z-index: 0;
+        }
+
+        .ticket-mask {
+            position: absolute;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            mask-image: linear-gradient(rgba(0, 0, 0, 0.1) 0%, white 20px);
+            perspective: 1000px;
+            top: calc(50% - 142px);
+            left: 0;
+            right: 0;
+            height: 100%;
+            min-height: 1500px;
+        }
+
+        .ticket {
+            float: left;
+            animation: ticket-move 11s ease-in-out infinite;
+            transform: translateY(50px);
+            perspective: 3000px;
+        }
+
+        @keyframes ticket-move {
+            0% {
+                transform: translateY(-300px);
+            }
+            7% {
+                transform: translateY(-250px);
+            }
+            12% {
+                transform: translateY(-200px);
+            }
+            16% {
+                transform: translateY(-170px);
+            }
+            22% {
+                transform: translateY(-100px);
+            }
+            27% {
+                transform: translateY(-40px);
+            }
+            34%,
+            88% {
+                transform: translateY(45px);
+            }
+            100% {
+                transform: translateY(100%) rotateX(160deg) scale(5);
+            }
+        }
+
+        .ticket:nth-child(2) .ticket-body {
+            transition-delay: 0.7s;
+        }
+
+        .ticket:hover .ticket-flip-container {
+            transform: rotateY(180deg);
+        }
+
+        .ticket-flip-container {
+            transition: 0.6s;
+            transform-style: preserve-3d;
+            position: relative;
+        }
+
+        .float {
+            transform-style: preserve-3d;
+            pointer-events: none;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .front,
+        .back {
+            display: inline-block;
+            backface-visibility: hidden;
+            transform-style: preserve-3d;
+        }
+
+        .front {
+            z-index: 1;
+        }
+
+        .back {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: rotateY(-180deg);
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        .icon-cube {
+            position: absolute;
+            height: 110%;
+            z-index: 1;
+            top: -3px;
+            left: 0;
+            right: 0;
+            margin: auto;
+            mix-blend-mode: soft-light;
+            opacity: 0.6;
+        }
+
+        .icon-cube path {
+            animation-delay: calc(var(--i) * 100ms) !important;
+            transform-origin: center;
+        }
+
+        .icon-cube .path-center {
+            animation: path-center 3s ease-in-out infinite;
+        }
+        @keyframes path-center {
+            50% {
+                transform: scale(1.3);
+            }
+        }
+
+        .icon-cube .path-t {
+            animation: path-t 1.6s ease-in-out infinite;
+        }
+        @keyframes path-t {
+            50% {
+                transform: translateY(1px);
+            }
+        }
+
+        .icon-cube .path-tl {
+            animation: path-tl 1.6s ease-in-out infinite;
+        }
+        @keyframes path-tl {
+            50% {
+                transform: translateX(1px) translateY(1px);
+            }
+        }
+
+        .icon-cube .path-tr {
+            animation: path-tr 1.6s ease-in-out infinite;
+        }
+        @keyframes path-tr {
+            50% {
+                transform: translateX(-1px) translateY(1px);
+            }
+        }
+
+        .icon-cube .path-br {
+            animation: path-br 1.6s ease-in-out infinite;
+        }
+        @keyframes path-br {
+            50% {
+                transform: translateX(-1px) translateY(-1px);
+            }
+        }
+
+        .icon-cube .path-bl {
+            animation: path-bl 1.6s ease-in-out infinite;
+        }
+        @keyframes path-bl {
+            50% {
+                transform: translateX(1px) translateY(-1px);
+            }
+        }
+
+        .icon-cube .path-b {
+            animation: path-b 1.6s ease-in-out infinite;
+        }
+        @keyframes path-b {
+            50% {
+                transform: translateY(-1px);
+            }
+        }
+
+        .ticket-body {
+            display: block;
+            position: relative;
+            width: 320px;
+            margin-bottom: 20px;
+            padding: 0;
+            border-radius: 7px 7px 0px 0px;
+            background-color: white;
+            text-align: center;
+            background: linear-gradient(to bottom, white, #dcfffd);
+            color: black;
+        }
+
+        .ticket-body svg,
+        .ticket-body img {
+            pointer-events: none;
+        }
+
+        .ticket-body .bold {
+            font-weight: 800;
+        }
+
+        .ticket-body header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            padding: 15px;
+            border-bottom: 1px dashed rgba(0, 0, 0, 0.4);
+            text-align: left;
+            height: 54px;
+        }
+
+        .ticket-body header .ticket-name {
+            font-weight: 300;
+            font-size: 1.05em;
+            line-height: normal;
+            align-items: center;
+            display: flex;
+            gap: 4px;
+            letter-spacing: -1px;
+        }
+
+        .ticket-body header span {
+            display: inline-block;
+        }
+
+        .ticket-body header time {
+            display: flex;
+        }
+
+        .ticket-body header .slash {
+            padding: 0 1px;
+            color: rgba(0, 0, 0, 0.4);
+        }
+        
+        .ticket-body header::after,
+        .ticket-body header::before {
+            content: "";
+            display: block;
+            width: 13px;
+            height: 13px;
+            background-color: #0f1114;
+            position: absolute;
+            right: -8px;
+            border-radius: 50%;
+            z-index: 11;
+            bottom: -7px;
+        }
+        .ticket-body header:after {
+            left: -8px;
+        }
+        .ticket-body .contents {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            min-height: 180px;
+            position: relative;
+            pointer-events: all;
+        }
+
+        .ticket-body .contents .event {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+            margin-top: 0;
+            font-weight: 600;
+            align-items: center;
+            text-align: center;
+            gap: 5px;
+        }
+
+        .ticket-body .contents .event span {
+            display: inline-block;
+            height: auto;
+            font-size: 2rem;
+            font-weight: 400;
+            line-height: 1.1;
+        }
+        .ticket-body .contents .event span.bold {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-right: 0;
+        }
+
+        .ticket-body .contents .event div:nth-child(2) {
+            font-size: 13px;
+            letter-spacing: 0.45em;
+            margin-left: 6px;
+            color: #2f4c8b62;
+        }
+
+        .ticket-body .contents .number {
+            position: absolute;
+            left: 15px;
+            bottom: -6px;
+            font-size: 2em;
+            color: #b5ddff;
+            font-weight: bolder;
+        }
+        
+        .ticket-body:after {
+            content: "";
+            display: block;
+            position: absolute;
+            bottom: -16px;
+            left: 0;
+            background:
+                -webkit-linear-gradient(-135deg, #dcfffd 50%, transparent 50%) 0 50%,
+                -webkit-linear-gradient(-45deg, #dcfffd 50%, transparent 50%) 0 50%,
+                transparent;
+            background-repeat: repeat-x;
+            background-size:
+                16px 16px,
+                16px 16px,
+                cover,
+                cover;
+            height: 16px;
+            width: 100%;
+            pointer-events: none;
+        }
+
+        .barcode {
+            box-shadow:
+                1px 0 0 1px,
+                5px 0 0 1px,
+                10px 0 0 1px,
+                11px 0 0 1px,
+                15px 0 0 1px,
+                18px 0 0 1px,
+                22px 0 0 1px,
+                23px 0 0 1px,
+                26px 0 0 1px,
+                30px 0 0 1px,
+                35px 0 0 1px,
+                37px 0 0 1px,
+                41px 0 0 1px,
+                44px 0 0 1px,
+                47px 0 0 1px,
+                51px 0 0 1px,
+                56px 0 0 1px,
+                59px 0 0 1px,
+                64px 0 0 1px,
+                68px 0 0 1px,
+                72px 0 0 1px,
+                74px 0 0 1px,
+                77px 0 0 1px,
+                81px 0 0 1px,
+                85px 0 0 1px,
+                88px 0 0 1px,
+                92px 0 0 1px,
+                95px 0 0 1px,
+                96px 0 0 1px,
+                97px 0 0 1px;
+            display: inline-block;
+            height: 30px;
+            width: 0;
+            left: 65%;
+            position: absolute;
+            top: 12px;
+        }
+
+        @keyframes appear {
+            0% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes appear2 {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+        .back header span {
+            animation: none;
+        }
+        .ticket:hover .back header span {
+            opacity: 0;
+            animation: appear 0.5s var(--ease-elastic) forwards 0.4s;
+        }
+
+        .ticket:hover .front header span {
+            opacity: 1;
+            animation: appear2 0.5s ease-in-out forwards;
+        }
+        .front header span {
+            opacity: 0;
+            animation: appear 0.5s var(--ease-elastic) forwards 0.4s;
+        }
+
+        .qrcode {
+            position: absolute;
+            z-index: 1;
+            color: #a5b7eb;
+        }
+
+        .qrcode img {
+            display: block;
+            height: 140px;
+        }
+        
+        .back .qrcode {
+            margin-top: 8px;
+        }
+        .back .qrcode::after {
+            --stroke-width: 0.2rem;
+            --corner-size: 1rem;
+
+            position: absolute;
+            content: "";
+            background:
+                linear-gradient(
+                    to right,
+                    currentColor var(--stroke-width),
+                    transparent var(--stroke-width)
+                )
+                0 0,
+                linear-gradient(
+                    to right,
+                    currentColor var(--stroke-width),
+                    transparent var(--stroke-width)
+                )
+                0 100%,
+                linear-gradient(
+                    to left,
+                    currentColor var(--stroke-width),
+                    transparent var(--stroke-width)
+                )
+                100% 0,
+                linear-gradient(
+                    to left,
+                    currentColor var(--stroke-width),
+                    transparent var(--stroke-width)
+                )
+                100% 100%,
+                linear-gradient(
+                    to bottom,
+                    currentColor var(--stroke-width),
+                    transparent var(--stroke-width)
+                )
+                0 0,
+                linear-gradient(
+                    to bottom,
+                    currentColor var(--stroke-width),
+                    transparent var(--stroke-width)
+                )
+                100% 0,
+                linear-gradient(
+                    to top,
+                    currentColor var(--stroke-width),
+                    transparent var(--stroke-width)
+                )
+                0 100%,
+                linear-gradient(
+                    to top,
+                    currentColor var(--stroke-width),
+                    transparent var(--stroke-width)
+                )
+                100% 100%;
+            background-size: var(--corner-size) var(--corner-size);
+            inset: 0;
+            background-repeat: no-repeat;
+        }
+        .back .qrcode::after {
+            animation: breath 3s var(--ease-elastic) infinite;
+        }
+
+        @keyframes breath {
+            0% {
+                transform: scale(1.05);
+                opacity: 0.3;
+            }
+            50% {
+                transform: scale(1.15);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.05);
+                opacity: 0.3;
+            }
+        }
+
+        .front .qrcode {
+            right: 5px;
+            bottom: -5px;
+        }
+
+        .front .qrcode img {
+            height: 70px;
+        }
+
+        .reflex {
+            pointer-events: none;
+            position: absolute;
+            inset: 0;
+            bottom: -5px;
+            z-index: 10;
+            overflow: hidden;
+        }
+        .reflex::before {
+            content: "";
+            position: absolute;
+            width: 300px;
+            background-color: rgba(255, 255, 255, 0.4);
+            background: linear-gradient(
+                to right,
+                rgba(221, 249, 255, 0.4) 10%,
+                rgba(221, 245, 255, 0.7) 60%,
+                rgba(221, 246, 255, 0.6) 60%,
+                rgba(221, 255, 254, 0.4) 90%
+            );
+            top: -10%;
+            bottom: -10%;
+            left: -132%;
+            transform: translateX(0) skew(-30deg);
+            transition: all 0.7s ease;
+        }
+        .float:hover .reflex::before {
+            transform: translate(280%, 0) skew(-30deg);
+        }
+        .float .front .reflex::before {
+            transition-delay: 0.3s;
+        }
+
+        .ticket-body::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            mask-image: linear-gradient(white 50%, transparent 100%);
+            border-radius: 7px 7px 0px 0px;
+            background: radial-gradient(
+                at 30% -5%,
+                #90f1f1,
+                #d3ccf0,
+                rgba(255, 255, 255, 0) 25%
+                ),
+                radial-gradient(at 30% 40%, #aad1f0, rgba(255, 255, 255, 0) 20%),
+                radial-gradient(at 50% 70%, #c4f2e5, rgba(255, 255, 255, 0) 30%),
+                radial-gradient(at 70% 0%, #d3ccf0, rgba(255, 255, 255, 0) 20%),
+                linear-gradient(
+                75deg,
+                #90f1f1 5%,
+                rgba(255, 255, 255, 0),
+                #aad1f0,
+                rgba(255, 255, 255, 0),
+                #e9d0ed,
+                rgba(255, 255, 255, 0),
+                #d3ccf0,
+                rgba(255, 255, 255, 0),
+                #c4f2e5 90%
+                ),
+                radial-gradient(at 30% 50%, #90f1f1, rgba(255, 255, 255, 0) 30%),
+                radial-gradient(at 30% 50%, #9cb9fc, rgba(255, 255, 255, 0) 30%),
+                radial-gradient(at 100% 50%, #90f1f1, #c2dcf2, rgba(255, 255, 255, 0) 50%),
+                linear-gradient(
+                115deg,
+                #90f1f1 5%,
+                #aad1f0 10%,
+                #d3ccf0,
+                #e9d0ed 20%,
+                #aad1f0,
+                #aad1f0 30%,
+                #d3ccf0,
+                #c2dcf2 40%,
+                #90f1f1,
+                #aad1f0 70%
+                );
+        }
+
+        .noise {
+            position: absolute;
+            top: -25px;
+            bottom: -20px;
+            left: 0;
+            right: 0;
+            opacity: 0.07;
+            mask-image: linear-gradient(
+                transparent 5%,
+                white 30%,
+                white 70%,
+                transparent 95%
+            );
+            filter: grayscale(1);
+            pointer-events: none;
+            z-index: 1;
+        }
+    </style>
 </head>
 <body>
+    <!-- Loader -->
+    <div id="page-loader">
+        <div class="cssload-main">
+            <div class="cssload-heart">
+                <span class="cssload-heartL"></span>
+                <span class="cssload-heartR"></span>
+                <span class="cssload-square"></span>
+            </div>
+            <div class="cssload-shadow"></div>
+        </div>
+    </div>
+
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Cambiar tema">
+        🌙
+    </button>
 
     <div id="intro-screen" class="screen">
         <div class="glass-card">
@@ -799,10 +1920,108 @@
                         </p>
                         
                         <button class="song-btn" onclick="toggleMusicModal(true)">Nuestra canción 🎵</button>
+                        <button class="song-btn" onclick="showTicket()" style="margin-top: 10px; background: #9c27b0;">Ver mi regalo 🎁</button>
                    </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div id="ticket-view" style="display: none; position: fixed; inset: 0; z-index: 2000; background: #fce4ec;">
+        <div class="area">
+            <div class="area-wrapper">
+                <div class="output">
+                    <div class="cover"></div>
+                    <div class="wrap-colors-1"></div>
+                    <div class="wrap-colors-2">
+                        <div class="bg-colors"></div>
+                    </div>
+                </div>
+                <div class="ticket-mask">
+                    <div class="ticket">
+                        <div class="ticket-flip-container">
+                            <div class="float">
+                                <div class="front">
+                                    <div class="ticket-body">
+                                        <div class="reflex"></div>
+                                        <div class="noise">
+                                            <svg viewBox="0 0 200 150">
+                                                <filter id="noise">
+                                                    <feTurbulence type="fractalNoise" baseFrequency="4.5" numOctaves="3" stitchTiles="stitch" />
+                                                </filter>
+                                                <rect width="100%" height="100%" filter="url(#noise)" />
+                                            </svg>
+                                        </div>
+                                        <header>
+                                            <div class="ticket-name">
+                                                <span>VALIDO</span>
+                                                <span>POR</span>
+                                            </div>
+                                            <time>
+                                                <div class="bold">14</div>
+                                                <div class="slash">/</div>
+                                                <div class="bold">02</div>
+                                            </time>
+                                        </header>
+                                        <div class="contents">
+                                            <div class="icon-cube">
+                                                <svg viewBox="0 0 100 100" width="100%" height="100%">
+                                                    <path class="path-center" fill="none" stroke="#b5ddff" stroke-width="0.5" d="M50 50 L50 20 L80 35 L80 65 L50 80 L20 65 L20 35 Z" />
+                                                    <path class="path-t" fill="none" stroke="#b5ddff" stroke-width="0.5" d="M50 20 L80 35 L50 50 L20 35 Z" />
+                                                    <path class="path-tl" fill="none" stroke="#b5ddff" stroke-width="0.5" d="M20 35 L50 50 L50 80 L20 65 Z" />
+                                                    <path class="path-tr" fill="none" stroke="#b5ddff" stroke-width="0.5" d="M80 35 L80 65 L50 80 L50 50 Z" />
+                                                </svg>
+                                            </div>
+                                            <div class="event">
+                                                <span>BESITOS</span>
+                                                <span class="bold">Y ABRAZOS</span>
+                                                <div>TIEMPO ILIMITADO</div>
+                                            </div>
+                                            <div class="number">∞</div>
+                                            <div class="qrcode">
+                                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TE%20AMO%20Y%20TE%20AMARE%20DE%20POR%20VIDA" alt="QR Code" />
+                                            </div>
+                                        </div>
+                                        <div class="barcode"></div>
+                                    </div>
+                                </div>
+                                <div class="back">
+                                    <div class="ticket-body">
+                                        <div class="reflex"></div>
+                                        <div class="noise">
+                                            <svg viewBox="0 0 200 150">
+                                                <filter id="noise2">
+                                                    <feTurbulence type="fractalNoise" baseFrequency="4.5" numOctaves="3" stitchTiles="stitch" />
+                                                </filter>
+                                                <rect width="100%" height="100%" filter="url(#noise2)" />
+                                            </svg>
+                                        </div>
+                                        <header>
+                                            <div class="ticket-name">
+                                                <span>VIGENCIA:</span>
+                                                <span>DE POR VIDA</span>
+                                            </div>
+                                            <time>
+                                                <div class="bold">14</div>
+                                                <div class="slash">/</div>
+                                                <div class="bold">02</div>
+                                            </time>
+                                        </header>
+                                        <div class="contents">
+                                            <div class="qrcode">
+                                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TE%20AMO%20Y%20TE%20AMARE%20DE%20PORVIDA" alt="QR Code" />
+                                            </div>
+                                        </div>
+                                        <div class="barcode"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button onclick="closeTicket()" style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 10px 20px; background: #ff4081; color: white; border: none; border-radius: 20px; font-family: 'Montserrat', sans-serif; cursor: pointer; z-index: 2001;">Volver a la carta</button>
     </div>
 
     <div id="hearts-container"></div>
@@ -1198,6 +2417,57 @@
 
         // Pause visualizer initially
         visualizer.classList.add('paused');
+
+        // --- THEME TOGGLE LOGIC ---
+        function toggleTheme() {
+            const body = document.body;
+            body.classList.toggle('dark-mode');
+            
+            const isDark = body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeIcon(isDark);
+        }
+
+        function updateThemeIcon(isDark) {
+            const btn = document.querySelector('.theme-toggle');
+            if (btn) {
+                btn.innerHTML = isDark ? '☀️' : '🌙';
+            }
+        }
+
+        // Initialize Theme
+        (function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                document.body.classList.add('dark-mode');
+                updateThemeIcon(true);
+            }
+        })();
+
+        // --- LOADER LOGIC ---
+        window.addEventListener('load', function() {
+            const loader = document.getElementById('page-loader');
+            if (loader) {
+                // Ensure it stays for at least a moment to be seen, or remove immediately if preferred.
+                // Using a small timeout to ensure smooth transition after load.
+                setTimeout(() => {
+                    loader.style.opacity = '0';
+                    loader.style.visibility = 'hidden';
+                    setTimeout(() => {
+                        if(loader.parentNode) loader.parentNode.removeChild(loader);
+                    }, 600);
+                }, 4000);
+            }
+        });
+        function showTicket() {
+            document.getElementById('ticket-view').style.display = 'block';
+        }
+
+        function closeTicket() {
+            document.getElementById('ticket-view').style.display = 'none';
+        }
     </script>
 </body>
 </html>
