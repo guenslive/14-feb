@@ -355,7 +355,6 @@
             transition: opacity 0.6s ease-in 2.1s;
             text-align: center;
             width: 100%;
-            height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -374,10 +373,10 @@
             border-radius: 2px;
             transform: rotate(-2deg);
             margin-bottom: 15px;
-            margin-top: 35px;
             width: fit-content;
             margin-left: auto; margin-right: auto;
             transition: transform 0.3s ease;
+            flex-shrink: 0; /* Evita que la foto se encoja si hay mucho texto */
         }
         
         .photo-frame:hover { transform: rotate(0deg) scale(1.02); }
@@ -389,6 +388,8 @@
             object-fit: cover;
             border: 1px solid #ddd;
             display: block;
+            cursor: pointer;
+            transition: transform 0.3s ease;
         }
 
         .letter-title {
@@ -2038,6 +2039,7 @@
   animation: idle 1s infinite ease-in-out;
   color: #333; /* Ensure text is visible */
   margin: 5px 0; /* Añadido margen vertical para separación */
+  flex-shrink: 0; /* Evita que el botón se encoja */
 }
 
 .highlight {
@@ -2196,6 +2198,67 @@
     translate: 0 -1px;
   }
 }
+
+        /* --- IMAGE MODAL --- */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 3000;
+            padding-top: 50px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.9);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            width: 80%;
+            max-width: 700px;
+            max-height: 80vh;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+            animation: zoom 0.6s;
+        }
+
+        @keyframes zoom {
+            from {transform:scale(0)} 
+            to {transform:scale(1)}
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .close-modal:hover,
+        .close-modal:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .couple-photo {
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .couple-photo:hover {
+            transform: scale(1.05);
+        }
 </style>
 </head>
 <body>
@@ -2220,7 +2283,7 @@
           <div class="pixar-card" role="article" aria-labelledby="card-username">
             <div class="card-header">
               <div class="card-avatar"></div>
-              <p class="card-username" id="card-username">Una sorpresa para ti</p>
+              <p class="card-username" id="card-username">G&E</p>
             </div>
 
             <div class="card-image-area" onclick="startAnimation()" style="cursor: pointer;">
@@ -2228,7 +2291,7 @@
                   <span style="font-size: 3em;">💌</span>
               </div>
               <p class="card-caption">
-                Toca el corazón para descubrir lo que tengo para ti.
+                Toca el corazón.
               </p>
             </div>
 
@@ -2270,14 +2333,22 @@
 
                    <div class="letter-content">
                         <div class="photo-frame">
-                            <img src="assets/tu-y-yo.jpg" alt="Nosotros" class="couple-photo">
+                            <img src="assets/tu-y-yo.jpg" alt="Nosotros" class="couple-photo" onclick="openImageModal(this.src)">
                         </div>
                         
-                        <h2 class="letter-title">Mi persona favorita</h2>
+                        <h2 class="letter-title">Para mi persona favorita</h2>
                         <p class="letter-text">
-                            Feliz San Valentín, mi amor.
+                            Feliz San Valentín, mi vida.
                             <br><br>
-                            Quería crear este detalle especial con nuestros colores y nuestro corazón 🖤.
+                            Quería crear este detalle muy especial para ti.
+                            <br>
+                            Me esforce muchisimo la verdad jajaja.
+                            <br>
+                            Te extraño con todo mi corazón, pero ya falta porquito para vernos jijiji.
+                            <br>
+                            Espero que este pequeño gesto te haga sonreír tanto como tú me haces sonreír a mí cada día. Muchas gracias por ser mi compañera de vida, mi confidente y mi mejor amiga. Gracias por amarme y dejarme amarte. Siento que hemos creado una relación muy bonita, claro no somos perfectos y podríamos mejorar en muchas cosas, pero al menos lo intentamos siempre. Siempre trato de mejorar por ti y por nosotros.
+                            <br>
+                            Sigo teniendo esa sensación de nervios cada que vez te voy a ver jajaja, 
                             <br><br>
                             <strong>Te amo infinitamente.</strong>
                         </p>
@@ -2504,6 +2575,11 @@
                 <p class="timetext time_full" id="duration">0:00</p>
             </div>
         </div>
+    </div>
+
+    <div id="image-modal" class="image-modal" onclick="closeImageModal()">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" id="expanded-image">
     </div>
 
     <script>
@@ -2874,6 +2950,19 @@
 
         function closeTicket() {
             document.getElementById('ticket-view').style.display = 'none';
+        }
+
+        /* --- IMAGE MODAL FUNCTIONS --- */
+        function openImageModal(src) {
+            const modal = document.getElementById('image-modal');
+            const modalImg = document.getElementById('expanded-image');
+            modal.style.display = "flex";
+            modalImg.src = src;
+        }
+
+        function closeImageModal() {
+            const modal = document.getElementById('image-modal');
+            modal.style.display = "none";
         }
     </script>
 </body>
