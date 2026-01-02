@@ -1381,9 +1381,9 @@
             transition-delay: 0.7s;
         }
 
-        .ticket:hover .ticket-flip-container {
+        /* .ticket:hover .ticket-flip-container {
             transform: rotateY(180deg);
-        }
+        } */
 
         .ticket-flip-container {
             transition: 0.6s;
@@ -1716,18 +1716,16 @@
         .back header span {
             animation: none;
         }
-        .ticket:hover .back header span {
+        /* .ticket:hover .back header span {
             opacity: 0;
             animation: appear 0.5s var(--ease-elastic) forwards 0.4s;
-        }
+        } */
 
         .ticket:hover .front header span {
             opacity: 1;
-            animation: appear2 0.5s ease-in-out forwards;
         }
         .front header span {
-            opacity: 0;
-            animation: appear 0.5s var(--ease-elastic) forwards 0.4s;
+            opacity: 1;
         }
 
         .qrcode {
@@ -1855,14 +1853,18 @@
             bottom: -10%;
             left: -132%;
             transform: translateX(0) skew(-30deg);
-            transition: all 0.7s ease;
+            animation: shine 6s infinite ease-in-out;
         }
-        .float:hover .reflex::before {
+
+        @keyframes shine {
+            0%, 10% { transform: translateX(0) skew(-30deg); }
+            40% { transform: translateX(500%) skew(-30deg); }
+            100% { transform: translateX(500%) skew(-30deg); }
+        }
+
+        /* .float:hover .reflex::before {
             transform: translate(280%, 0) skew(-30deg);
-        }
-        .float .front .reflex::before {
-            transition-delay: 0.3s;
-        }
+        } */
 
         .ticket-body::before {
             content: "";
@@ -2521,37 +2523,6 @@
                                         </div>
                                         <div class="barcode"></div>
                                     </div>
-                                </div>
-                                <div class="back">
-                                    <div class="ticket-body">
-                                        <div class="reflex"></div>
-                                        <div class="noise">
-                                            <svg viewBox="0 0 200 150">
-                                                <filter id="noise2">
-                                                    <feTurbulence type="fractalNoise" baseFrequency="4.5" numOctaves="3" stitchTiles="stitch" />
-                                                </filter>
-                                                <rect width="100%" height="100%" filter="url(#noise2)" />
-                                            </svg>
-                                        </div>
-                                        <header>
-                                            <div class="ticket-name">
-                                                <span>VIGENCIA:</span>
-                                                <span>DE POR VIDA</span>
-                                            </div>
-                                            <time>
-                                                <div class="bold">14</div>
-                                                <div class="slash">/</div>
-                                                <div class="bold">02</div>
-                                            </time>
-                                        </header>
-                                        <div class="contents">
-                                            <div class="qrcode">
-                                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TE%20AMO%20Y%20TE%20AMARE%20DE%20PORVIDA" alt="QR Code" />
-                                            </div>
-                                        </div>
-                                        <div class="barcode"></div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
