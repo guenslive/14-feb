@@ -52,7 +52,9 @@
         .theme-toggle {
             position: fixed;
             top: 20px;
+            top: max(20px, env(safe-area-inset-top) + 20px);
             right: 20px;
+            right: max(20px, env(safe-area-inset-right) + 20px);
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
             border-radius: 50%;
@@ -64,13 +66,17 @@
             cursor: pointer;
             z-index: 1000;
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             box-shadow: var(--soft-shadow-md);
             transition: transform 0.3s ease, background 0.3s ease;
             font-size: 1.2rem;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .theme-toggle:hover {
-            transform: scale(1.1);
+        @media (hover: hover) {
+            .theme-toggle:hover {
+                transform: scale(1.1);
+            }
         }
 
         /* --- RESET Y CENTRADO ABSOLUTO --- */
@@ -2961,10 +2967,7 @@
                 setTimeout(() => {
                     loader.style.opacity = '0';
                     loader.style.visibility = 'hidden';
-                    setTimeout(() => {
-                        if(loader.parentNode) loader.parentNode.removeChild(loader);
-                    }, 600);
-                }, 4000);
+                }, 500);
             }
         });
         function showTicket() {
