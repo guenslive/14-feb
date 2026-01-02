@@ -2514,8 +2514,11 @@
         <!-- From Uiverse.io by bociKond --> 
         <div class="card">
             <!-- Video Container -->
-            <div id="youtube-player-container" style="width: 100%; height: 180px; margin-bottom: 10px; border-radius: 8px; overflow: hidden; background: #000;">
-                <div id="youtube-player"></div>
+            <div id="video-container" style="width: 100%; height: 180px; margin-bottom: 10px; border-radius: 8px; overflow: hidden; background: #000;">
+                <video id="local-video" width="100%" height="100%" style="object-fit: cover;" playsinline>
+                    <source src="assets/videos/nuestra-cancion.mp4" type="video/mp4">
+                    Tu navegador no soporta el elemento de video.
+                </video>
             </div>
 
             <div class="top">
@@ -2710,19 +2713,19 @@
             if (show) {
                 modal.classList.add('active');
                 shouldPlay = true; // Mark that we want to play
-                if (player && typeof player.playVideo === 'function') {
+                if (player) {
                     playSong();
                 }
             } else {
                 modal.classList.remove('active');
                 shouldPlay = false;
+                pauseSong(); // Pause when closing modal
             }
         }
 
-        /* --- MUSIC PLAYER LOGIC (YouTube API) --- */
-        let player;
+        /* --- MUSIC PLAYER LOGIC (HTML5 Video) --- */
+        const player = document.getElementById('local-video');
         let isPlaying = false;
-        let progressInterval;
         let shouldPlay = false; // Flag to auto-play when ready
 
         const playIcon = document.getElementById('play-icon');
@@ -2736,150 +2739,93 @@
         const volumeBar = document.getElementById('volume-bar');
         const volumeKnob = document.getElementById('volume-knob');
 
-        // Load YouTube IFrame API
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-        function onYouTubeIframeAPIReady() {
-            let playerVars = {
-                'playsinline': 1,
-                'controls': 0,
-                'disablekb': 1,
-                'enablejsapi': 1,
-                'rel': 0,
-                'showinfo': 0,
-                'modestbranding': 1
-            };
-
-            // Solo añadir 'origin' si NO estamos en un archivo local
-            if (window.location.protocol !== 'file:') {
-                playerVars.origin = window.location.origin;
-            }
-
-            player = new YT.Player('youtube-player', {
-                height: '100%',
-                width: '100%',
-                videoId: 'sOS9aOIXPEk',
-                host: 'https://www.youtube.com',
-                playerVars: playerVars,
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange,
-                    'onError': onPlayerError
-                }
-            });
-        }
-
-        function onPlayerReady(event) {
-            // Set initial volume
-            if(player && player.setVolume) {
-                player.setVolume(50);
-            }
+        // Initialize player
+        if (player) {
+            player.volume = 0.5;
             updateVolumeUI(0.5);
             
-            if (player && player.getDuration) {
-                durationEl.innerText = formatTime(player.getDuration());
-            }
+            player.addEventListener('loadedmetadata', () => {
+                durationEl.innerText = formatTime(player.duration);
+            });
 
-            // If the modal was already opened, play now
-            if (shouldPlay) {
-                playSong();
-            }
-        }
+            player.addEventListener('timeupdate', () => {
+                const currentTime = player.currentTime;
+                const duration = player.duration;
+                
+                if (duration) {
+                    const progressPercent = (currentTime / duration) * 100;
+                    progressBar.style.width = `${progressPercent}%`;
+                    currentTimeEl.innerText = formatTime(currentTime);
+                }
+            });
 
-        function onPlayerError(event) {
-            console.error("YouTube Player Error:", event.data);
-        }
-
-        function onPlayerStateChange(event) {
-            if (event.data == YT.PlayerState.PLAYING) {
+            player.addEventListener('play', () => {
                 isPlaying = true;
                 playIcon.style.display = 'none';
                 pauseIcon.style.display = 'block';
                 visualizer.classList.remove('paused');
-                startProgressLoop();
-                
-                // Update duration if it wasn't available before
-                if (player && player.getDuration) {
-                    durationEl.innerText = formatTime(player.getDuration());
-                }
-            } else {
-                if (event.data != YT.PlayerState.BUFFERING) {
-                    isPlaying = false;
-                    playIcon.style.display = 'block';
-                    pauseIcon.style.display = 'none';
-                    visualizer.classList.add('paused');
-                    stopProgressLoop();
-                }
-            }
+            });
+
+            player.addEventListener('pause', () => {
+                isPlaying = false;
+                playIcon.style.display = 'block';
+                pauseIcon.style.display = 'none';
+                visualizer.classList.add('paused');
+            });
+            
+            player.addEventListener('ended', () => {
+                isPlaying = false;
+                playIcon.style.display = 'block';
+                pauseIcon.style.display = 'none';
+                visualizer.classList.add('paused');
+            });
         }
 
         function togglePlay() {
-            if (isPlaying) {
-                pauseSong();
-            } else {
+            if (player.paused) {
                 playSong();
+            } else {
+                pauseSong();
             }
         }
 
         function playSong() {
-            if (player && player.playVideo) {
-                player.playVideo();
+            if (player) {
+                player.play();
             }
         }
 
         function pauseSong() {
-            if (player && player.pauseVideo) {
-                player.pauseVideo();
+            if (player) {
+                player.pause();
             }
         }
 
         function restartSong() {
-            if (player && player.seekTo) {
-                player.seekTo(0);
+            if (player) {
+                player.currentTime = 0;
                 playSong();
             }
         }
 
         function skipTime(seconds) {
-            if (player && player.getCurrentTime) {
-                const currentTime = player.getCurrentTime();
-                player.seekTo(currentTime + seconds, true);
+            if (player) {
+                player.currentTime += seconds;
             }
-        }
-
-        function startProgressLoop() {
-            stopProgressLoop();
-            progressInterval = setInterval(() => {
-                if (player && player.getCurrentTime) {
-                    const currentTime = player.getCurrentTime();
-                    const duration = player.getDuration();
-                    
-                    const progressPercent = (currentTime / duration) * 100;
-                    progressBar.style.width = `${progressPercent}%`;
-                    
-                    currentTimeEl.innerText = formatTime(currentTime);
-                    durationEl.innerText = formatTime(duration);
-                }
-            }, 1000);
-        }
-
-        function stopProgressLoop() {
-            if (progressInterval) clearInterval(progressInterval);
         }
 
         // Click on progress bar to seek
         function seek(e) {
-            if (!player || !player.seekTo) return;
+            if (!player) return;
             
             const width = progressContainer.clientWidth;
             const clickX = e.offsetX;
-            const duration = player.getDuration();
+            const duration = player.duration;
             
-            const seekTime = (clickX / width) * duration;
-            player.seekTo(seekTime);
+            if (duration) {
+                const seekTime = (clickX / width) * duration;
+                player.currentTime = seekTime;
+            }
         }
 
         // Format time helper
@@ -2892,14 +2838,14 @@
 
         // Volume Control
         volumeControl.addEventListener('click', (e) => {
-            if (!player || !player.setVolume) return;
+            if (!player) return;
 
             const width = volumeControl.clientWidth;
             const clickX = e.offsetX;
             const volume = clickX / width;
             
             if (volume >= 0 && volume <= 1) {
-                player.setVolume(volume * 100);
+                player.volume = volume;
                 updateVolumeUI(volume);
             }
         });
