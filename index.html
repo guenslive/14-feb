@@ -2556,7 +2556,7 @@
                               </g>
                             </g>
                           </svg>
-                          Ticket especial 🎁
+                          Tickets especiales 🎁
                         </button>
 
                         <svg height="0" width="0" style="position: absolute;">
@@ -2629,13 +2629,13 @@
                                                 </svg>
                                             </div>
                                             <div class="event">
-                                                <span>BESITOS</span>
-                                                <span class="bold">Y ABRAZOS</span>
-                                                <div>VIGENCIA: ILIMITADO</div>
+                                                <span id="ticket-line1">BESITOS</span>
+                                                <span id="ticket-line2" class="bold">Y ABRAZOS</span>
+                                                <div id="ticket-validity">VIGENCIA: ILIMITADO</div>
                                             </div>
-                                            <div class="number">∞</div>
+                                            <div id="ticket-number" class="number">∞</div>
                                             <div class="qrcode">
-                                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TE%20AMO%20Y%20TE%20AMARE%20DE%20POR%20VIDA" alt="QR Code" />
+                                                <img id="ticket-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TE%20AMO%20Y%20TE%20AMARE%20DE%20POR%20VIDA" alt="QR Code" />
                                             </div>
                                         </div>
                                         <div class="barcode"></div>
@@ -2647,6 +2647,7 @@
                 </div>
             </div>
         </div>
+        <button onclick="showAnotherTicket()" style="position: absolute; bottom: 68px; left: 50%; transform: translateX(-50%); padding: 10px 20px; background: #ab47bc; color: white; border: none; border-radius: 20px; font-family: 'Montserrat', sans-serif; cursor: pointer; z-index: 2001;">Obtener otro ticket 🎟️</button>
         <button onclick="closeTicket()" style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 10px 20px; background: #ff4081; color: white; border: none; border-radius: 20px; font-family: 'Montserrat', sans-serif; cursor: pointer; z-index: 2001;">Volver a la carta</button>
     </div>
 
@@ -3172,8 +3173,92 @@
                 }, 500);
             }
         });
+
+        const specialTickets = [
+            {
+                line1: 'BESITOS',
+                line2: 'Y ABRAZOS',
+                validity: 'VIGENCIA: ILIMITADO',
+                number: '∞',
+                qrData: 'TE AMO Y TE AMARE DE POR VIDA'
+            },
+            {
+                line1: 'UN HELADITO',
+                line2: 'JEJEJE',
+                validity: 'VIGENCIA: ILIMITADO',
+                number: '∞',
+                qrData: 'VALE POR UN HELADITO JEJEJE'
+            },
+            {
+                line1: 'UNA',
+                line2: 'PIZZONA',
+                validity: 'VIGENCIA: ILIMITADO',
+                number: '∞',
+                qrData: 'VALE POR UNA PIZZONA'
+            },
+            {
+                line1: 'TODO MI AMOR',
+                line2: 'Y COMPRENSION',
+                validity: 'VIGENCIA: ILIMITADO',
+                number: '∞',
+                qrData: 'TODO MI AMOR Y COMPRENSION PARA TI'
+            },
+            {
+                line1: 'UNA MANOSEADA',
+                line2: 'JEJEJE',
+                validity: 'VIGENCIA: ILIMITADO',
+                number: '∞',
+                qrData: 'VALE POR UNA MANOSEADA JEJEJE'
+            }
+        ];
+
+        let lastSpecialTicketIndex = -1;
+
+        function getRandomSpecialTicket() {
+            if (specialTickets.length === 1) {
+                lastSpecialTicketIndex = 0;
+                return specialTickets[0];
+            }
+
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * specialTickets.length);
+            } while (randomIndex === lastSpecialTicketIndex);
+
+            lastSpecialTicketIndex = randomIndex;
+            return specialTickets[randomIndex];
+        }
+
+        function applySpecialTicket(ticket) {
+            document.getElementById('ticket-line1').textContent = ticket.line1;
+            document.getElementById('ticket-line2').textContent = ticket.line2;
+            document.getElementById('ticket-validity').textContent = ticket.validity;
+            document.getElementById('ticket-number').textContent = ticket.number;
+
+            const qrImage = document.getElementById('ticket-qr');
+            qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(ticket.qrData)}`;
+        }
+
+        function restartTicketEntryAnimation() {
+            const ticketElement = document.querySelector('#ticket-view .ticket');
+            if (!ticketElement) return;
+
+            ticketElement.style.animation = 'none';
+            void ticketElement.offsetWidth;
+            ticketElement.style.animation = '';
+        }
+
         function showTicket() {
+            const randomTicket = getRandomSpecialTicket();
+            applySpecialTicket(randomTicket);
             document.getElementById('ticket-view').style.display = 'block';
+            restartTicketEntryAnimation();
+        }
+
+        function showAnotherTicket() {
+            const randomTicket = getRandomSpecialTicket();
+            applySpecialTicket(randomTicket);
+            restartTicketEntryAnimation();
         }
 
         function closeTicket() {
