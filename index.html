@@ -615,7 +615,7 @@
 
         .card {
             position: relative;
-            width: 70%;
+            
             min-height: auto;
             background: #191414;
             border-radius: 10px;
@@ -627,6 +627,12 @@
             transform: scale(0.8);
             opacity: 0;
             transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                width: 80%;
+            }
         }
 
         .music-modal.active .card {
@@ -2044,8 +2050,40 @@
 
 .card-actions {
   display: flex;
-  justify-content: space-around;
+    justify-content: center;
   margin-top: 1.5em;
+    position: relative;
+        height: 3.2em;
+}
+
+.dynamic-no-message {
+    margin: 0.9em 0 0 0;
+    min-height: 1.4em;
+    text-align: center;
+    font-size: 0.9em;
+    font-weight: 600;
+    color: var(--ui-dark);
+    opacity: 0.85;
+}
+
+.heartbreak-counter {
+    margin: 0.2em 0 0 0;
+    text-align: center;
+    font-size: 0.82em;
+    font-weight: 700;
+    color: var(--ui-dark);
+    opacity: 0.8;
+    display: none;
+}
+
+.dynamic-no-message.bump {
+    animation: no-message-pop 0.28s ease;
+}
+
+@keyframes no-message-pop {
+    0% { transform: scale(0.96); }
+    60% { transform: scale(1.04); }
+    100% { transform: scale(1); }
 }
 
 .action-button {
@@ -2069,17 +2107,66 @@
     0 var(--button-press-depth) 0 var(--ui-dark);
 }
 
-.like-button {
+.reject-button {
   background: var(--ui-red);
   box-shadow:
     0 var(--button-press-depth) 0 var(--ui-red-shadow),
     0 0.4em 0 var(--ui-dark);
 }
 
-.like-button:active {
+.reject-button:active {
   box-shadow:
     0 0 0 var(--ui-red-shadow),
     0 var(--button-press-depth) 0 var(--ui-dark);
+}
+
+.accept-button {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+}
+
+.accept-button:active {
+    transform: translate(-50%, var(--button-press-depth));
+}
+
+.escape-button {
+    position: absolute;
+    left: 65%;
+    top: 9px;
+    will-change: transform;
+}
+
+.intro-heart-celebration {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 20;
+}
+
+.intro-heart-piece {
+    position: absolute;
+    left: 50%;
+    top: 62%;
+    opacity: 0;
+    animation: intro-heart-float var(--duration, 1000ms) ease-out forwards;
+    font-size: var(--size, 18px);
+}
+
+@keyframes intro-heart-float {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, 0) scale(0.55);
+    }
+    20% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--dx, 0px)), calc(-190px - var(--dy, 0px))) scale(1.12);
+    }
 }
 
 .action-button-icon {
@@ -2360,24 +2447,33 @@
               <p class="card-username" id="card-username">G&E</p>
             </div>
 
-            <div class="card-image-area" onclick="startAnimation()" style="cursor: pointer;">
+                        <div class="card-image-area">
               <div class="card-image-placeholder" style="display: flex; justify-content: center; align-items: center;">
                   <span style="font-size: 3em;">💌</span>
               </div>
               <p class="card-caption">
-                Toca el corazón.
+                                ¿Quieres ser mi San Valentín?
               </p>
             </div>
 
             <div class="card-actions">
-              <button class="action-button like-button" aria-label="Like Post" onclick="startAnimation()">
-                <svg class="action-button-icon" viewBox="0 0 24 24">
-                  <path
-                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                  ></path>
-                </svg>
+                            <button id="yes-heart-btn" class="action-button accept-button" aria-label="Sí, quiero" onclick="startAnimation()">
+                                <svg class="action-button-icon" viewBox="0 0 24 24">
+                                    <path
+                                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                                    ></path>
+                                </svg>
+                            </button>
+                            <button id="no-heart-btn" class="action-button reject-button escape-button" aria-label="No">
+                                <svg class="action-button-icon" viewBox="0 0 24 24">
+                                    <path
+                                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                                    ></path>
+                                </svg>
               </button>
             </div>
+                        <p id="dynamic-no-message" class="dynamic-no-message"></p>
+                        <p id="heartbreak-counter" class="heartbreak-counter">Veces que me has roto el corazon: 1</p>
           </div>
         </div>
     </div>
@@ -2428,7 +2524,9 @@
                             <br>
                             Quiero seguir a tu lado por mucho tiempo más, seguir conociéndote, aprendiendo de ti y creciendo juntos. Te amo mi vida, te mando muchos besitos y te guardo otros más para cuando regreses y te los pueda dar directamente.
                             <br><br>
-                            <strong>Te amo infinitamente licenciada.</strong>
+                            <strong>Te amo infinitamente.</strong>
+                            <br>
+                            <em>De Edgar para mi licenciada.</em>
                         </p>
                         
                         <button class="button" onclick="toggleMusicModal(true)">
@@ -2629,35 +2727,134 @@
     </div>
 
     <script>
+        let introAnimationStarted = false;
+
+        function playIntroBlackHearts(onComplete) {
+            const introScreen = document.getElementById('intro-screen');
+            if (!introScreen) {
+                if (typeof onComplete === 'function') onComplete();
+                return;
+            }
+
+            const layer = document.createElement('div');
+            layer.className = 'intro-heart-celebration';
+            introScreen.appendChild(layer);
+
+            const count = 28;
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('span');
+                    heart.className = 'intro-heart-piece';
+                    heart.textContent = '🖤';
+                    heart.style.setProperty('--dx', `${(Math.random() - 0.5) * 280}px`);
+                    heart.style.setProperty('--dy', `${Math.random() * 120}px`);
+                    heart.style.setProperty('--size', `${14 + Math.random() * 14}px`);
+                    heart.style.setProperty('--duration', `${900 + Math.random() * 450}ms`);
+                    layer.appendChild(heart);
+
+                    setTimeout(() => heart.remove(), 1500);
+                }, i * 24);
+            }
+
+            setTimeout(() => {
+                layer.remove();
+                if (typeof onComplete === 'function') onComplete();
+            }, 1100);
+        }
+
+        function setupValentineChoice() {
+            const noButton = document.getElementById('no-heart-btn');
+            const actionsContainer = document.querySelector('.card-actions');
+            const dynamicMessage = document.getElementById('dynamic-no-message');
+            const heartbreakCounter = document.getElementById('heartbreak-counter');
+
+            if (!noButton || !actionsContainer) return;
+
+            let attempts = 0;
+            const phrases = [
+                'Chale',
+                '¿Acaso me odias? 😢',
+                '¿Segura? :(',
+                'Si no me quieres, solo dimelo 😔',
+                '¿En serio? 😞',    
+            ];
+
+            const moveNoButton = () => {
+                attempts += 1;
+                const scale = Math.max(0.22, 1 - attempts * 0.12);
+
+                const containerWidth = actionsContainer.clientWidth;
+                const containerHeight = actionsContainer.clientHeight;
+                const buttonWidth = noButton.offsetWidth * scale;
+                const buttonHeight = noButton.offsetHeight * scale;
+
+                const maxX = Math.max(0, containerWidth - buttonWidth);
+                const maxY = Math.max(0, containerHeight - buttonHeight);
+
+                const randomX = Math.random() * maxX;
+                const randomY = Math.random() * maxY;
+
+                noButton.style.transform = `translate(${randomX}px, ${randomY}px) scale(${scale})`;
+
+                if (heartbreakCounter) {
+                    heartbreakCounter.style.display = 'block';
+                    heartbreakCounter.textContent = `Veces que me has roto el corazon: ${attempts}`;
+                }
+
+                if (dynamicMessage) {
+                    const phraseIndex = Math.min(attempts - 1, phrases.length - 1);
+                    dynamicMessage.textContent = phrases[phraseIndex];
+                    dynamicMessage.classList.remove('bump');
+                    void dynamicMessage.offsetWidth;
+                    dynamicMessage.classList.add('bump');
+                }
+            };
+
+            const evade = (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                moveNoButton();
+            };
+
+            ['mouseenter', 'pointerdown', 'touchstart', 'click'].forEach((eventName) => {
+                noButton.addEventListener(eventName, evade, { passive: false });
+            });
+        }
+
         function startAnimation() {
+            if (introAnimationStarted) return;
+            introAnimationStarted = true;
+
             const introScreen = document.getElementById('intro-screen');
             const envelopeContainer = document.getElementById('envelope-container');
             const envelopeWrapper = document.querySelector('.envelope-wrapper');
-            
-            introScreen.style.opacity = '0';
-            
-            setTimeout(() => {
-                introScreen.style.display = 'none';
-                envelopeContainer.style.display = 'flex';
-                // Forzar reflow para que la transición funcione
-                envelopeContainer.offsetHeight; 
-                envelopeContainer.classList.remove('hidden');
-                
+
+            playIntroBlackHearts(() => {
+                introScreen.style.opacity = '0';
+
                 setTimeout(() => {
-                    envelopeWrapper.classList.add('open');
-                    
-                    // Lanzar corazones desde el sobre
-                    setTimeout(() => {
-                        launchEnvelopeHearts();
-                    }, 800);
+                    introScreen.style.display = 'none';
+                    envelopeContainer.style.display = 'flex';
+                    // Forzar reflow para que la transición funcione
+                    envelopeContainer.offsetHeight;
+                    envelopeContainer.classList.remove('hidden');
 
                     setTimeout(() => {
-                        startContinuousHearts();
-                        addClickInteraction();
-                    }, 2000);
-                    
-                }, 500);
-            }, 800);
+                        envelopeWrapper.classList.add('open');
+
+                        // Lanzar corazones desde el sobre
+                        setTimeout(() => {
+                            launchEnvelopeHearts();
+                        }, 800);
+
+                        setTimeout(() => {
+                            startContinuousHearts();
+                            addClickInteraction();
+                        }, 2000);
+
+                    }, 500);
+                }, 800);
+            });
         }
 
         function launchEnvelopeHearts() {
@@ -2961,6 +3158,8 @@
 
         // --- LOADER LOGIC ---
         window.addEventListener('load', function() {
+            setupValentineChoice();
+
             const loader = document.getElementById('page-loader');
             if (loader) {
                 // Ensure it stays for at least a moment to be seen, or remove immediately if preferred.
