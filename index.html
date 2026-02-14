@@ -2632,6 +2632,7 @@
                                                 <span id="ticket-line1">BESITOS</span>
                                                 <span id="ticket-line2" class="bold">Y ABRAZOS</span>
                                                 <div id="ticket-validity">VIGENCIA: ILIMITADO</div>
+                                                <div id="ticket-rarity" style="font-size: 11px; letter-spacing: 0.2em; color: #7a5da8; margin-top: 2px;">RAREZA: COMUN</div>
                                             </div>
                                             <div id="ticket-number" class="number">∞</div>
                                             <div class="qrcode">
@@ -2646,6 +2647,11 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div id="ticket-stats" style="position: absolute; bottom: 112px; left: 50%; transform: translateX(-50%); z-index: 2001; background: rgba(255,255,255,0.72); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.6); border-radius: 14px; padding: 8px 14px; min-width: 230px; text-align: center; color: #6a3f7a; font-family: 'Montserrat', sans-serif;">
+            <div id="ticket-counter" style="font-size: 0.82rem; font-weight: 700;">Descubiertos: 0/0 · Tickets: 0</div>
+            <div style="font-size: 0.7rem; margin-top: 6px; opacity: 0.9;">Últimos tickets</div>
+            <div id="ticket-history" style="display: flex; gap: 8px; justify-content: center; margin-top: 5px;"></div>
         </div>
         <button onclick="showAnotherTicket()" style="position: absolute; bottom: 68px; left: 50%; transform: translateX(-50%); padding: 10px 20px; background: #ab47bc; color: white; border: none; border-radius: 20px; font-family: 'Montserrat', sans-serif; cursor: pointer; z-index: 2001;">Obtener otro ticket 🎟️</button>
         <button onclick="closeTicket()" style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 10px 20px; background: #ff4081; color: white; border: none; border-radius: 20px; font-family: 'Montserrat', sans-serif; cursor: pointer; z-index: 2001;">Volver a la carta</button>
@@ -3180,63 +3186,183 @@
                 line2: 'Y ABRAZOS',
                 validity: 'VIGENCIA: ILIMITADO',
                 number: '∞',
-                qrData: 'TE AMO Y TE AMARE DE POR VIDA'
+                qrData: 'TE AMO Y TE AMARE DE POR VIDA',
+                rarity: 'COMUN',
+                weight: 34
             },
             {
                 line1: 'UN HELADITO',
                 line2: 'JEJEJE',
                 validity: 'VIGENCIA: ILIMITADO',
                 number: '∞',
-                qrData: 'VALE POR UN HELADITO JEJEJE'
+                qrData: 'VALE POR UN HELADITO JEJEJE',
+                rarity: 'COMUN',
+                weight: 28
             },
             {
                 line1: 'UNA',
                 line2: 'PIZZONA',
                 validity: 'VIGENCIA: ILIMITADO',
                 number: '∞',
-                qrData: 'VALE POR UNA PIZZONA'
+                qrData: 'VALE POR UNA PIZZONA',
+                rarity: 'ESPECIAL',
+                weight: 20
             },
             {
                 line1: 'TODO MI AMOR',
                 line2: 'Y COMPRENSION',
                 validity: 'VIGENCIA: ILIMITADO',
                 number: '∞',
-                qrData: 'TODO MI AMOR Y COMPRENSION PARA TI'
+                qrData: 'TODO MI AMOR Y COMPRENSION PARA TI',
+                rarity: 'EPICO',
+                weight: 12
             },
             {
                 line1: 'UNA MANOSEADA',
                 line2: 'JEJEJE',
                 validity: 'VIGENCIA: ILIMITADO',
                 number: '∞',
-                qrData: 'VALE POR UNA MANOSEADA JEJEJE'
+                qrData: 'VALE POR UNA MANOSEADA JEJEJE',
+                rarity: 'LEGENDARIO',
+                weight: 6
             }
         ];
 
         let lastSpecialTicketIndex = -1;
+        const discoveredSpecialTicketIndexes = new Set();
+        const specialTicketHistory = [];
+        let totalSpecialTicketDraws = 0;
 
         function getRandomSpecialTicket() {
             if (specialTickets.length === 1) {
                 lastSpecialTicketIndex = 0;
-                return specialTickets[0];
+                return { ticket: specialTickets[0], index: 0 };
             }
 
-            let randomIndex;
-            do {
-                randomIndex = Math.floor(Math.random() * specialTickets.length);
-            } while (randomIndex === lastSpecialTicketIndex);
+            const candidateIndexes = specialTickets
+                .map((_, index) => index)
+                .filter((index) => index !== lastSpecialTicketIndex);
+
+            const totalWeight = candidateIndexes.reduce((sum, index) => {
+                return sum + (specialTickets[index].weight || 1);
+            }, 0);
+
+            let roll = Math.random() * totalWeight;
+            let randomIndex = candidateIndexes[0];
+
+            for (const index of candidateIndexes) {
+                roll -= (specialTickets[index].weight || 1);
+                if (roll <= 0) {
+                    randomIndex = index;
+                    break;
+                }
+            }
 
             lastSpecialTicketIndex = randomIndex;
-            return specialTickets[randomIndex];
+            return { ticket: specialTickets[randomIndex], index: randomIndex };
         }
 
         function applySpecialTicket(ticket) {
             document.getElementById('ticket-line1').textContent = ticket.line1;
             document.getElementById('ticket-line2').textContent = ticket.line2;
             document.getElementById('ticket-validity').textContent = ticket.validity;
+            document.getElementById('ticket-rarity').textContent = `RAREZA: ${ticket.rarity || 'COMUN'}`;
             document.getElementById('ticket-number').textContent = ticket.number;
 
             const qrImage = document.getElementById('ticket-qr');
             qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(ticket.qrData)}`;
+        }
+
+        function updateSpecialTicketStats() {
+            const counterElement = document.getElementById('ticket-counter');
+            const historyElement = document.getElementById('ticket-history');
+
+            if (counterElement) {
+                counterElement.textContent = `Descubiertos: ${discoveredSpecialTicketIndexes.size}/${specialTickets.length} · Tickets: ${totalSpecialTicketDraws}`;
+            }
+
+            if (historyElement) {
+                historyElement.innerHTML = '';
+
+                if (!specialTicketHistory.length) {
+                    const emptyState = document.createElement('div');
+                    emptyState.textContent = '—';
+                    emptyState.style.fontSize = '0.72rem';
+                    emptyState.style.opacity = '0.8';
+                    historyElement.appendChild(emptyState);
+                    return;
+                }
+
+                specialTicketHistory.forEach((ticketItem) => {
+                    const ticketData = ticketItem.ticket;
+                    const miniTicket = document.createElement('div');
+                    miniTicket.style.width = '92px';
+                    miniTicket.style.padding = '6px 5px';
+                    miniTicket.style.borderRadius = '8px';
+                    miniTicket.style.background = 'linear-gradient(to bottom, white, #f2ecff)';
+                    miniTicket.style.border = '1px dashed rgba(122, 93, 168, 0.4)';
+                    miniTicket.style.boxShadow = '0 4px 10px rgba(106, 63, 122, 0.12)';
+                    miniTicket.style.display = 'flex';
+                    miniTicket.style.flexDirection = 'column';
+                    miniTicket.style.alignItems = 'center';
+                    miniTicket.style.justifyContent = 'center';
+                    miniTicket.style.lineHeight = '1.05';
+                    miniTicket.style.cursor = 'pointer';
+                    miniTicket.title = 'Ver este ticket';
+                    miniTicket.onclick = () => showTicketFromHistory(ticketItem.index);
+
+                    const miniLine1 = document.createElement('div');
+                    miniLine1.textContent = ticketData.line1;
+                    miniLine1.style.fontSize = '0.58rem';
+                    miniLine1.style.fontWeight = '600';
+                    miniLine1.style.letterSpacing = '0.03em';
+
+                    const miniLine2 = document.createElement('div');
+                    miniLine2.textContent = ticketData.line2;
+                    miniLine2.style.fontSize = '0.62rem';
+                    miniLine2.style.fontWeight = '800';
+                    miniLine2.style.marginTop = '2px';
+
+                    const miniRarity = document.createElement('div');
+                    miniRarity.textContent = ticketData.rarity || 'COMUN';
+                    miniRarity.style.fontSize = '0.5rem';
+                    miniRarity.style.marginTop = '4px';
+                    miniRarity.style.opacity = '0.75';
+                    miniRarity.style.letterSpacing = '0.08em';
+
+                    miniTicket.appendChild(miniLine1);
+                    miniTicket.appendChild(miniLine2);
+                    miniTicket.appendChild(miniRarity);
+                    historyElement.appendChild(miniTicket);
+                });
+            }
+        }
+
+        function drawSpecialTicket() {
+            const { ticket, index } = getRandomSpecialTicket();
+            applySpecialTicket(ticket);
+
+            totalSpecialTicketDraws += 1;
+            discoveredSpecialTicketIndexes.add(index);
+
+            specialTicketHistory.unshift({
+                index,
+                ticket
+            });
+            if (specialTicketHistory.length > 2) {
+                specialTicketHistory.pop();
+            }
+
+            updateSpecialTicketStats();
+        }
+
+        function showTicketFromHistory(index) {
+            const selectedTicket = specialTickets[index];
+            if (!selectedTicket) return;
+
+            applySpecialTicket(selectedTicket);
+            lastSpecialTicketIndex = index;
+            restartTicketEntryAnimation();
         }
 
         function restartTicketEntryAnimation() {
@@ -3249,17 +3375,17 @@
         }
 
         function showTicket() {
-            const randomTicket = getRandomSpecialTicket();
-            applySpecialTicket(randomTicket);
+            drawSpecialTicket();
             document.getElementById('ticket-view').style.display = 'block';
             restartTicketEntryAnimation();
         }
 
         function showAnotherTicket() {
-            const randomTicket = getRandomSpecialTicket();
-            applySpecialTicket(randomTicket);
+            drawSpecialTicket();
             restartTicketEntryAnimation();
         }
+
+        updateSpecialTicketStats();
 
         function closeTicket() {
             document.getElementById('ticket-view').style.display = 'none';
