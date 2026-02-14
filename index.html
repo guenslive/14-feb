@@ -573,20 +573,23 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: radial-gradient(circle at 20% 20%, rgba(120, 70, 170, 0.45), rgba(0, 0, 0, 0.7) 65%);
             backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 2000;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.45s var(--smooth-ease), background 0.8s ease, backdrop-filter 0.45s var(--smooth-ease);
         }
 
         .music-modal.active {
             opacity: 1;
             pointer-events: all;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
         .song-btn {
@@ -617,16 +620,18 @@
             position: relative;
             
             min-height: auto;
-            background: #191414;
+            background: linear-gradient(160deg, #191414, #231a2e);
             border-radius: 10px;
             padding: .8rem;
             display: flex;
             flex-direction: column;
             gap: .5rem;
             box-shadow: 0 10px 40px -25px rgba(100, 100, 100, .5);
-            transform: scale(0.8);
+            transform: translateY(18px) scale(0.92) rotateX(5deg);
+            transform-origin: center;
             opacity: 0;
-            transition: transform 0.3s ease, opacity 0.3s ease;
+            transition: transform 0.45s var(--smooth-ease), opacity 0.45s var(--smooth-ease), background 0.8s ease, box-shadow 0.8s ease;
+            will-change: transform, opacity;
         }
 
         @media (max-width: 480px) {
@@ -636,9 +641,24 @@
         }
 
         .music-modal.active .card {
-            transform: scale(1);
+            transform: translateY(0) scale(1) rotateX(0deg);
             opacity: 1;
         }
+
+        .music-modal .card > * {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.35s ease, transform 0.45s var(--smooth-ease);
+        }
+
+        .music-modal.active .card > * {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .music-modal.active .card > *:nth-child(1) { transition-delay: 0.05s; }
+        .music-modal.active .card > *:nth-child(2) { transition-delay: 0.10s; }
+        .music-modal.active .card > *:nth-child(3) { transition-delay: 0.15s; }
 
         .top {
             position: relative;
@@ -718,15 +738,32 @@
 
         .controls svg {
             cursor: pointer;
-            transition: 0.1s;
+            transition: transform 0.2s ease, color 0.2s ease, opacity 0.2s ease;
         }
 
         .controls svg:hover {
             color: #1db954;
+            transform: translateY(-1px) scale(1.04);
         }
 
         .controls .heart:hover {
             color: pink;
+        }
+
+        #video-container {
+            transition: transform 0.45s var(--smooth-ease), filter 0.45s ease, box-shadow 0.45s ease;
+        }
+
+        .music-modal.active #video-container {
+            transform: translateY(0) scale(1);
+        }
+
+        .card.is-playing #video-container {
+            filter: saturate(1.12) brightness(1.05);
+        }
+
+        .card:not(.is-playing) #video-container {
+            filter: saturate(0.88) brightness(0.94);
         }
 
         .volume-container {
@@ -2956,6 +2993,12 @@
             const modal = document.getElementById('music-modal');
             if (show) {
                 modal.classList.add('active');
+                if (durationEl && player) {
+                    durationEl.innerText = Number.isFinite(player.duration) && player.duration > 0
+                        ? formatTime(player.duration)
+                        : '0:00';
+                }
+                updatePlayerDynamicBackground(player && player.duration ? (player.currentTime / player.duration) : 0);
                 shouldPlay = true; // Mark that we want to play
                 if (player) {
                     playSong();
@@ -2978,6 +3021,8 @@
         const currentTimeEl = document.getElementById('current-time');
         const durationEl = document.getElementById('duration');
         const visualizer = document.getElementById('visualizer');
+        const musicModal = document.getElementById('music-modal');
+        const musicCard = document.querySelector('#music-modal .card');
         // const volumeControl = document.getElementById('volume-control'); // Removed
         // const volumeBar = document.getElementById('volume-bar'); // Removed
         // const volumeKnob = document.getElementById('volume-knob'); // Removed
@@ -2986,17 +3031,31 @@
         if (player) {
             // player.volume = 0.5; // Moved to new logic
             // updateVolumeUI(0.5); // Moved to new logic
+
+            const syncDurationLabel = () => {
+                if (!durationEl) return;
+                const totalDuration = player.duration;
+                durationEl.innerText = Number.isFinite(totalDuration) && totalDuration > 0
+                    ? formatTime(totalDuration)
+                    : '0:00';
+            };
             
             player.addEventListener('loadedmetadata', () => {
-                durationEl.innerText = formatTime(player.duration);
+                syncDurationLabel();
             });
+
+            player.addEventListener('durationchange', syncDurationLabel);
+            player.addEventListener('canplay', syncDurationLabel);
+            player.addEventListener('loadeddata', syncDurationLabel);
 
             player.addEventListener('timeupdate', () => {
                 const currentTime = player.currentTime;
                 const duration = player.duration;
+                syncDurationLabel();
                 
                 if (duration) {
                     const progressPercent = (currentTime / duration) * 100;
+                    updatePlayerDynamicBackground(progressPercent / 100);
                     if (progressSlider) {
                         progressSlider.value = progressPercent;
                         progressSlider.style.background = `linear-gradient(to right, #1db954 ${progressPercent}%, #5e5e5e ${progressPercent}%)`;
@@ -3022,6 +3081,7 @@
                 playIcon.style.display = 'none';
                 pauseIcon.style.display = 'block';
                 visualizer.classList.remove('paused');
+                if (musicCard) musicCard.classList.add('is-playing');
             });
 
             player.addEventListener('pause', () => {
@@ -3029,6 +3089,7 @@
                 playIcon.style.display = 'block';
                 pauseIcon.style.display = 'none';
                 visualizer.classList.add('paused');
+                if (musicCard) musicCard.classList.remove('is-playing');
             });
             
             player.addEventListener('ended', () => {
@@ -3036,8 +3097,27 @@
                 playIcon.style.display = 'block';
                 pauseIcon.style.display = 'none';
                 visualizer.classList.add('paused');
+                if (musicCard) musicCard.classList.remove('is-playing');
+                updatePlayerDynamicBackground(1);
             });
+
+            syncDurationLabel();
         }
+
+        function updatePlayerDynamicBackground(progress) {
+            if (!musicModal || !musicCard) return;
+
+            const normalizedProgress = Math.max(0, Math.min(1, progress || 0));
+            const hueBase = 265 + Math.round(normalizedProgress * 85);
+            const hueAccent = (hueBase + 65) % 360;
+            const hueCard = (hueBase + 20) % 360;
+
+            musicModal.style.background = `radial-gradient(circle at 20% 20%, hsla(${hueBase}, 70%, 62%, 0.45), rgba(0, 0, 0, 0.72) 62%)`;
+            musicCard.style.background = `linear-gradient(160deg, hsl(${hueCard}, 28%, 14%), hsl(${hueAccent}, 34%, 18%))`;
+            musicCard.style.boxShadow = `0 14px 45px -22px hsla(${hueAccent}, 65%, 55%, 0.45)`;
+        }
+
+        updatePlayerDynamicBackground(0);
 
         function togglePlay() {
             if (player.paused) {
